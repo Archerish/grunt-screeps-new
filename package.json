@@ -1,20 +1,20 @@
 {
-  "name": "grunt-screeps",
-  "description": "A Grunt plugin for committing code to your Screeps account",
-  "version": "1.4.0",
-  "homepage": "https://github.com/screeps/grunt-screeps",
-  "author": "Artem Chivchalov <chivchalov@gmail.com> (https://screeps.com)",
+  "name": "grunt-screeps-new",
+  "description": "一个支持Token登陆的用于提交Screeps代码的Grunt插件（非官方）",
+  "version": "1.0.0",
+  "homepage": "https://github.com/screeps/grunt-screeps-new",
+  "author": "Archerish <wwwxdhouwxd@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/screeps/grunt-screeps.git"
+    "url": "https://github.com/Archerish/grunt-screeps-new.git"
   },
   "bugs": {
-    "url": "https://github.com/screeps/grunt-screeps/issues"
+    "url": "https://github.com/Archerish/grunt-screeps-new/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/screeps/grunt-screeps/blob/master/LICENSE-MIT"
+      "url": "https://github.com/Archerish/grunt-screeps-new/blob/master/LICENSE-MIT"
     }
   ],
   "engines": {

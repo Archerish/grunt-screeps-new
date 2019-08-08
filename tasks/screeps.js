@@ -1,6 +1,6 @@
 /*
- * grunt-screeps
- * https://github.com/screeps/grunt-screeps
+ * grunt-screeps-new
+ * https://github.com/Archerish/grunt-screeps
  *
  * Copyright (c) 2015 Artem Chivchalov
  * Licensed under the MIT license.
@@ -42,72 +42,79 @@ module.exports = function (grunt) {
             }).map(function (filepath) {
                 var basename = path.basename(filepath),
                     ext = path.extname(basename),
-                    name = basename.replace(ext,'');
+                    name = basename.replace(ext, '');
 
-                if(ext === '.js') {
-                    modules[name] = grunt.file.read(filepath, {encoding: 'utf8'});
+                if (ext === '.js') {
+                    modules[name] = grunt.file.read(filepath, { encoding: 'utf8' });
                 }
                 else {
-                    modules[name] = {binary: grunt.file.read(filepath, {encoding: null}).toString('base64')};
+                    modules[name] = { binary: grunt.file.read(filepath, { encoding: null }).toString('base64') };
                 }
             });
+        });
 
-            var proto = server.http ? http : https,
-                req = proto.request({
-                hostname: server.host || 'screeps.com',
-                port: server.port || (server.http ? 80 : 443),
-                path: options.ptr ? '/ptr/api/user/code' : '/api/user/code',
-                method: 'POST',
-                auth: options.email + ':' + options.password,
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8'
-                }
-            }, function(res) {
+        const requestOptions = {
+            hostname: server.host || 'screeps.com',
+            port: server.port || (server.http ? 80 : 443),
+            path: options.ptr ? '/ptr/api/user/code' : '/api/user/code',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        };
+
+        if (options.token) {
+            requestOptions.headers['X-Token'] = options.token;
+        } else {
+            requestOptions.auth = options.email + ':' + options.password;
+        }
+
+        var proto = server.http ? http : https,
+            req = proto.request(requestOptions, function (res) {
                 res.setEncoding('utf8');
 
                 var data = '';
 
-                if(res.statusCode < 200 || res.statusCode >= 300) {
-                  grunt.fail.fatal('Screeps server returned error code ' + res.statusCode);
+                if (res.statusCode < 200 || res.statusCode >= 300) {
+                    grunt.fail.fatal('Screeps server returned error code ' + res.statusCode);
                 }
 
-                res.on('data', function(chunk) {
+                res.on('data', function (chunk) {
                     data += chunk;
                 });
 
-                res.on('end', function() {
+                res.on('end', function () {
                     var serverText = server && server.host || 'Screeps';
                     try {
-                      var parsed = JSON.parse(data);
-                      serverText = server && server.host || 'Screeps';
-                      if(parsed.ok) {
-                          var msg = 'Committed to ' + serverText + ' account "' + options.email + '"';
-                          if(options.branch) {
-                              msg += ' branch "' + options.branch+'"';
-                          }
-                          if(options.ptr) {
-                              msg += ' [PTR]';
-                          }
-                          msg += '.';
-                          grunt.log.writeln(msg);
-                      }
-                      else {
-                          grunt.log.error('Error while committing to ' + serverText + ': '+util.inspect(parsed));
-                      }
+                        var parsed = JSON.parse(data);
+                        serverText = server && server.host || 'Screeps';
+                        if (parsed.ok) {
+                            var msg = 'Committed to ' + serverText + ' account "' + (options.accountAlias ? options.email : 'Undefined Alias') + '"';
+                            if (options.branch) {
+                                msg += ' branch "' + options.branch + '"';
+                            }
+                            if (options.ptr) {
+                                msg += ' [PTR]';
+                            }
+                            msg += '.';
+                            grunt.log.writeln(msg);
+                        }
+                        else {
+                            grunt.log.error('Error while committing to ' + serverText + ': ' + util.inspect(parsed));
+                        }
                     } catch (e) {
-                      grunt.log.error('Error while processing ' + serverText + ' json: '+e.message);
+                        grunt.log.error('Error while processing ' + serverText + ' json: ' + e.message);
                     }
                     done();
                 });
             });
 
-            var postData = {modules: modules};
-            if(options.branch) {
-                postData.branch = options.branch;
-            }
-            req.write(JSON.stringify(postData));
-            req.end();
-        });
+        var postData = { modules: modules };
+        if (options.branch) {
+            postData.branch = options.branch;
+        }
+        req.write(JSON.stringify(postData));
+        req.end();
     });
 
 };
