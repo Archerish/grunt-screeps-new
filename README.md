@@ -28,7 +28,6 @@ module.exports = function(grunt) {
                 host: 'screeps.com',
                 // 通过accountAlias设置账户昵称
                 accountAlias: 'LABEL_FOR_THIS_ACCOUNT',
-                branch: 'default',
                 ptr: false,
                 // 注意：Token登陆为可选项，有Token的情况下优先使用Token登陆
                 // Token登陆只能用于官服，无法应用于私服
